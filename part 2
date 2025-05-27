@@ -1,0 +1,37 @@
+   public String printMessages() {
+        return "Message ID: " + messageID + "\nMessage Hash: " + messageHash +
+               "\nRecipient: " + recipient + "\nMessage: " + messageText;
+    }
+    public static int returnTotalMessages() {
+        return totalMessages;
+    }
+ }
+ 2. JSON Storage Method
+ public void storeMessage() {
+    JSONObject obj = new JSONObject();
+    obj.put("messageID", messageID);
+    obj.put("messageHash", messageHash);
+    obj.put("recipient", recipient);
+    obj.put("message", messageText);
+    try (FileWriter file = new FileWriter("messages.json", true)) {
+        file.write(obj.toJSONString() + "\n");
+        file.flush();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+ }
+ 3. Unit Tests
+ import static org.junit.jupiter.api.Assertions.*;
+ import org.junit.jupiter.api.Test;
+ public class MessageTest {
+    @Test
+    public void testMessageUnder250Characters() {
+        String text = "HI Mike, can you join us for dinner tonight?";
+        Message msg = new Message("+27718693002", text);
+        assertTrue(text.length() <= 250, "Message ready to send.");
+    }
+    @Test
+    public void testMessageOver250Characters() {
+        String longText = "x".repeat(260);
+        assertTrue(longText.length() > 250, "Message exceeds 250 characters by " +
+ (longText.length() - 250));
