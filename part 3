@@ -1,0 +1,90 @@
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
+/**
+ *
+ * @author RC_Student_lab
+ */
+public class main {
+    import javax.swing.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        ArrayList<Message> messages = new ArrayList<>();
+
+        Login login = new Login(); // assume working Login class from earlier
+
+        // Assume successful login process here...
+
+        if (login.loginUser()) {
+            System.out.println("Welcome to QuickChat.");
+
+            System.out.print("How many messages do you want to send? ");
+            int totalMessages = sc.nextInt();
+            sc.nextLine();
+
+            for (int i = 0; i < totalMessages; i++) {
+                System.out.println("\nMessage #" + (i + 1));
+
+                System.out.print("Enter recipient number (with +27): ");
+                String recipient = sc.nextLine();
+
+                System.out.print("Enter message: ");
+                String message = sc.nextLine();
+
+                if (message.length() > 250) {
+                    System.out.println("Message exceeds 250 characters by " + (message.length() - 250));
+                    i--;
+                    continue;
+                }
+
+                Message msg = new Message(i + 1, recipient, message);
+
+                if (!msg.checkRecipientCell()) {
+                    System.out.println("Recipient number incorrectly formatted.");
+                    i--;
+                    continue;
+                }
+
+                System.out.print("Choose: Send / Discard / Store: ");
+                String option = sc.nextLine();
+                String result = msg.sendMessageOption(option);
+                System.out.println(result);
+
+                if (option.equalsIgnoreCase("send") || option.equalsIgnoreCase("store")) {
+                    messages.add(msg);
+                }
+
+                if (option.equalsIgnoreCase("store")) {
+                    storeMessageAsJSON(msg);
+                }
+
+                JOptionPane.showMessageDialog(null, msg.printMessage());
+            }
+
+            // Display total sent
+            System.out.println("Total messages sent or stored: " + messages.size());
+        } else {
+            System.out.println("You need to log in first.");
+        }
+    }
+
+    public static void storeMessageAsJSON(Message msg) {
+        try (FileWriter file = new FileWriter("storedMessages.json", true)) {
+            file.write("{\n");
+            file.write("\"messageID\": \"" + msg.getMessageID() + "\",\n");
+            file.write("\"recipient\": \"" + msg.getRecipient() + "\",\n");
+            file.write("\"message\": \"" + msg.getMessageText() + "\"\n");
+            file.write("},\n");
+        } catch (IOException e) {
+            System.out.println("Error writing to JSON file.");
+        }
+    }
+}
+}
