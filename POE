@@ -1,0 +1,97 @@
+package MainPackage;
+
+import java.util.HashMap;
+import java.util.regex.Pattern;
+import javax.swing.JOptionPane;
+
+// Khutso_Pollen_Masekwameng
+
+public class Login {
+
+    private static HashMap<String, String> userDatabase = new HashMap<>();
+    private boolean loginStatus = false;
+
+    // Method to validate username
+    public static boolean checkUserName(String username) throws IllegalArgumentException {
+        String regex = "^(?=.*_)[a-zA-Z0-9_]{1,5}$";
+        return username.matches(regex);
+    }
+
+    // Method to validate password complexity
+    public static boolean checkPasswordComplexity(String password) throws IllegalArgumentException {
+        String regex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+        return Pattern.matches(regex, password);
+    }
+
+    // Method to validate South African cell phone number with international code
+    public static boolean checkCellPhoneNumber(String phone) throws IllegalArgumentException {
+        String phoneRegex = "^\\+27[6-8][0-9]{8}$";
+        return Pattern.matches(phoneRegex, phone);
+    }
+
+    // Method to register a new user
+    public String registerUser(String username, String password, String phoneNumber) throws IllegalArgumentException {
+        
+        if (Register_Form.firstname.equals("")) {
+            String message = "Please enter your first name";
+            JOptionPane.showMessageDialog(null, message, "Registration Error", JOptionPane.ERROR_MESSAGE);
+            return message;
+        }
+
+        if (Register_Form.lastname.equals("")) {
+            String message = "Please enter your last name";
+            JOptionPane.showMessageDialog(null, message, "Registration Error", JOptionPane.ERROR_MESSAGE);
+            return message;
+        }
+
+        if (!checkUserName(username)) {
+            String message = "Username is not correctly formatted. Please ensure that your username contains an underscore and is no more than five characters in length.";
+            JOptionPane.showMessageDialog(null, message, "Registration Error", JOptionPane.ERROR_MESSAGE);
+            return message;
+        } else {
+            JOptionPane.showMessageDialog(null, "Username successfully captured.", "Registration", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        if (!checkPasswordComplexity(password)) {
+            String message = "Password is not correctly formatted. Please ensure it has at least eight characters, a capital letter, a number, and a special character.";
+            JOptionPane.showMessageDialog(null, message, "Registration Error", JOptionPane.ERROR_MESSAGE);
+            return message;
+        } else {
+            JOptionPane.showMessageDialog(null, "Password successfully captured.", "Registration", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        if (!checkCellPhoneNumber(phoneNumber)) {
+            String message = "Cell phone number incorrectly formatted or missing international code (+27).";
+            JOptionPane.showMessageDialog(null, message, "Registration Error", JOptionPane.ERROR_MESSAGE);
+            return message;
+        } else {
+            JOptionPane.showMessageDialog(null, "Cell phone number successfully added.", "Registration", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        // Save the user
+        userDatabase.put(username, password);
+        String successMessage = "Your Account Registration was Successful.";
+        JOptionPane.showMessageDialog(null, successMessage, "Registration Successful", JOptionPane.INFORMATION_MESSAGE);
+        return successMessage;
+    }
+
+    // Method to log the user in
+    public boolean loginUser(String username, String password) {
+        System.out.println("Attempting login for: " + username);
+        System.out.println("Stored Password: " + userDatabase.get(username));
+        System.out.println("Entered Password: " + password);
+
+        return userDatabase.containsKey(username) && userDatabase.get(username).equals(password);
+    }
+
+    // Method to return login status message
+    public String returnLoginStatus(boolean isSuccess) {
+        String message = isSuccess
+                ? "Welcome " + Register_Form.firstname + " " + Register_Form.lastname + ", it is great to see you again."
+                : "Username or password incorrect, please try again.";
+
+        JOptionPane.showMessageDialog(null, message, "Login Status", 
+            isSuccess ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
+        return message;
+    }
+}
